@@ -19,7 +19,7 @@ function SignIn(props) {
       <Jumbotron>
         <h1>Welcome to Firebase TaskBoard 🔥</h1>
         <p>
-          This is a simple taskboard app created using React and Firebase by{" "}
+          A simple taskboard app created using React and Firebase by{" "}
           <a
             href="https://github.com/lorcalhost/"
             target="_blank"
