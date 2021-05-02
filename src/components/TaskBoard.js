@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Task from "./Task";
-import SignOut from "./SignOut";
 
 import {
   Jumbotron,
@@ -37,35 +36,37 @@ function TaskBoard(props) {
   const addTask = async (e) => {
     e.preventDefault();
 
-    const tasksRef = firestore
-      .collection("users")
-      .doc(auth.currentUser.uid)
-      .collection("tasks");
+    if (formTitle !== "" && formDescription !== "") {
+      const tasksRef = firestore
+        .collection("users")
+        .doc(auth.currentUser.uid)
+        .collection("tasks");
 
-    if (editing !== false) {
-      const payload = {
-        uid: auth.currentUser.uid,
-        title: formTitle,
-        description: formDescription,
-      };
+      if (editing !== false) {
+        const payload = {
+          uid: auth.currentUser.uid,
+          title: formTitle,
+          description: formDescription,
+        };
 
-      tasksRef.doc(editing).update(payload);
-      setEditing(false);
-    } else {
-      const payload = {
-        uid: auth.currentUser.uid,
-        title: formTitle,
-        description: formDescription,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      };
+        tasksRef.doc(editing).update(payload);
+        setEditing(false);
+      } else {
+        const payload = {
+          uid: auth.currentUser.uid,
+          title: formTitle,
+          description: formDescription,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        };
 
-      await tasksRef.add(payload);
+        await tasksRef.add(payload);
+      }
+
+      setFormTitle("");
+      setFormDescription("");
     }
-
-    setFormTitle("");
-    setFormDescription("");
   };
-
+  console.log(tasks);
   return (
     <section>
       <Jumbotron fluid>
@@ -74,18 +75,26 @@ function TaskBoard(props) {
           <p>Stay productive. ☕</p>
         </Container>
       </Jumbotron>
-      <ul className="list-group task-list">
-        {tasks &&
-          tasks.map((tsk) => (
-            <Task
-              key={tsk.id}
-              task={tsk}
-              controllers={[setFormTitle, setFormDescription, setEditing]}
-              auth={auth}
-              firestore={firestore}
-            />
-          ))}
-      </ul>
+      {tasks && (
+        <ul className="list-group task-list">
+          {tasks.length !== 0 ? (
+            tasks.map((tsk) => (
+              <Task
+                key={tsk.id}
+                task={tsk}
+                controllers={[setFormTitle, setFormDescription, setEditing]}
+                auth={auth}
+                firestore={firestore}
+              />
+            ))
+          ) : (
+            <div>
+              <p>💭</p>
+              <h6>So empty </h6>
+            </div>
+          )}
+        </ul>
+      )}
       <br></br>
       <Form onSubmit={addTask} className="task-input">
         <p>Add new task:</p>
@@ -111,7 +120,6 @@ function TaskBoard(props) {
           </InputGroup.Append>
         </InputGroup>
       </Form>
-      <SignOut auth={auth} />
     </section>
   );
 }

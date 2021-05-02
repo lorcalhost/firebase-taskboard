@@ -28,12 +28,22 @@ function Task(props) {
     <li className="list-group-item task-list-item">
       <b>{title}</b>
       <p>{description}</p>
-      <div className="task-btns">
-        <Button variant="outline-dark" onClick={editTask}>
+      <div className="task-btn-div">
+        <Button
+          type="submit"
+          variant="outline-dark"
+          onClick={editTask}
+          className="task-btn"
+        >
           ✏️
         </Button>
         &nbsp;
-        <Button type="submit" variant="outline-dark" onClick={deleteTask}>
+        <Button
+          type="submit"
+          variant="outline-dark"
+          onClick={deleteTask}
+          className="task-btn"
+        >
           🗑️
         </Button>
       </div>

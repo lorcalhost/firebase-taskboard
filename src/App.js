@@ -2,6 +2,7 @@ import React from "react";
 import "./App.css";
 import TaskBoard from "./components/TaskBoard";
 import SignIn from "./components/SignIn";
+import NavBar from "./components/NavBar";
 
 import firebase from "firebase/app";
 import "firebase/auth";
@@ -31,6 +32,7 @@ function App() {
 
   return (
     <div className="App">
+      <NavBar auth={auth} />
       <header className="App-header">
         <section>
           {user ? (

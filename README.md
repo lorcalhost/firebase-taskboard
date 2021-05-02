@@ -7,5 +7,4 @@ The app can be tested from [here](http://fire-taskboard.web.app/).
 ## Todo:
 
 - [ ] Polish UI
-- [ ] Update favico
 - [ ] Add features
