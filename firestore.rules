@@ -6,10 +6,14 @@ service cloud.firestore {
       allow read, write, delete: if false;
     }
     
-    match /tasks/{taskId} {
-      allow read: if request.auth.uid == resource.data.uid || !exists(request.path);
-      allow write: if request.auth.uid == request.resource.data.uid;
-      allow delete: if request.auth.uid == resource.data.uid;
+    match /users/{userId} {
+      allow read, write, delete: if request.auth.uid == userId;
+    }
+    
+    match /users/{userId}/tasks/{taskId} {
+    
+      allow read, write, delete: if request.auth.uid == userId;
+    
     }
     
   }
