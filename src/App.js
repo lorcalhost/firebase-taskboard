@@ -13,7 +13,6 @@ import {
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
-import "firebase/analytics";
 
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
@@ -34,7 +33,6 @@ if (!firebase.apps.length) {
 
 const auth = firebase.auth();
 const firestore = firebase.firestore();
-const analytics = firebase.analytics();
 
 function App() {
   const [user] = useAuthState(auth);
@@ -99,18 +97,26 @@ function TaskBoard() {
 
   const [formTitle, setFormTitle] = useState("");
   const [formDescription, setFormDescription] = useState("");
+  const [editing, setEditing] = useState(false);
 
   const addTask = async (e) => {
     e.preventDefault();
 
     const tasksRef = firestore.collection("tasks");
-
-    await tasksRef.add({
+    const payload = {
       uid: auth.currentUser.uid,
       title: formTitle,
       description: formDescription,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+    };
+
+    if (editing !== false) {
+      tasksRef.doc(editing).update(payload);
+      setEditing(false);
+    } else {
+      await tasksRef.add(payload);
+    }
+
     setFormTitle("");
     setFormDescription("");
   };
@@ -124,7 +130,14 @@ function TaskBoard() {
         </Container>
       </Jumbotron>
       <ul className="list-group task-list">
-        {tasks && tasks.map((tsk) => <Task key={tsk.id} task={tsk} />)}
+        {tasks &&
+          tasks.map((tsk) => (
+            <Task
+              key={tsk.id}
+              task={tsk}
+              controllers={[setFormTitle, setFormDescription, setEditing]}
+            />
+          ))}
       </ul>
       <br></br>
       <Form onSubmit={addTask} className="task-input">
@@ -135,12 +148,14 @@ function TaskBoard() {
             onChange={(e) => setFormTitle(e.target.value)}
             placeholder="Title"
             aria-label="Title"
+            as="textarea"
           />
           <FormControl
             value={formDescription}
             onChange={(e) => setFormDescription(e.target.value)}
             placeholder="Description"
             aria-label="Description"
+            as="textarea"
           />
           <InputGroup.Append>
             <Button type="submit" variant="dark">
@@ -156,25 +171,33 @@ function TaskBoard() {
 
 function Task(props) {
   const { title, description, id } = props.task;
+  const setFormTitle = props.controllers[0];
+  const setFormDescription = props.controllers[1];
+  const setEditing = props.controllers[2];
 
-  const deleteTask = async () => {
-    firestore.collection("tasks").doc(id).delete();
+  const editTask = () => {
+    setEditing(id);
+    setFormTitle(title);
+    setFormDescription(description);
   };
 
-  console.log(props.task);
+  const deleteTask = () => {
+    firestore.collection("tasks").doc(id).delete();
+  };
 
   return (
     <li className="list-group-item task-list-item">
       <b>{title}</b>
       <p>{description}</p>
-      <Button
-        type="submit"
-        variant="outline-dark"
-        className="delete-btn"
-        onClick={deleteTask}
-      >
-        🗑️
-      </Button>
+      <div className="task-btns">
+        <Button variant="outline-dark" onClick={editTask}>
+          ✏️
+        </Button>
+        &nbsp;
+        <Button type="submit" variant="outline-dark" onClick={deleteTask}>
+          🗑️
+        </Button>
+      </div>
     </li>
   );
 }

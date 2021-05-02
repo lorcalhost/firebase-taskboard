@@ -12,7 +12,7 @@ code {
     monospace;
 }
 
-.delete-btn {
+.task-btns {
   float: right;
 }
 
@@ -21,17 +21,17 @@ code {
   max-width: 80%;
   margin-left: auto;
   margin-right: auto;
-  border-radius: 25px;
+  border-radius: 15px;
 }
 
 .task-list-item {
   background-color: transparent;
   text-align: left;
-  border: solid 2px rgb(75, 75, 75);
+  border: solid 2px #343a40;
 }
 
 .task-input {
-  max-width: 80%;
+  max-width: 90%;
   margin-left: auto;
   margin-right: auto;
 }
